@@ -51,13 +51,14 @@ class NewCoinOrder extends Command
             new Client(),
             $config
         );
-        $this->toOrder($coin->name,$apiInstance);
+        $this->toOrder($coin->name, $apiInstance);
 
     }
 
-    public function toOrder($name,$apiInstance){
+    public function toOrder($name, $apiInstance)
+    {
 
-        $currency = $name.'_USDT';
+        $currency = $name . '_USDT';
 
         try {
 
@@ -80,17 +81,17 @@ class NewCoinOrder extends Command
 
             // 10%涨跌就卖出
             $PriceUp = $price * 1.2;
-//            $PriceDown = $price * 0.9;
+            $PriceDown = $price * 0.9;
             $isSale = true;
 
-            GateMessage::query()->insert(['message'=>date('Y-m-d H:i:s').'购买完成等待卖出price' . $price]);
+            GateMessage::query()->insert([ 'message' => date('Y-m-d H:i:s') . '购买完成等待卖出price' . $price ]);
             while ($isSale) {
                 $associate_array['currency_pair'] = $currency;
                 $tickers = $apiInstance->listTickers($associate_array);
                 $nowPrice = json_decode($tickers[0])->lowest_ask;
-                dump(date('Y-m-d H:i:s').'买入价：' . $price . '当前价格' . $nowPrice . '卖出目标价格' . '[' . $PriceDown .'|'. $PriceUp . ']');
+                dump(date('Y-m-d H:i:s') . '买入价：' . $price . '当前价格' . $nowPrice . '卖出目标价格' . '[' . $PriceDown . '|' . $PriceUp . ']');
                 if ($nowPrice > $PriceUp
-//                    || $nowPrice < $PriceDown
+                    || ($nowPrice < $PriceDown && date('i') > 1)
                 ) {
 
                     $data = [
@@ -107,23 +108,23 @@ class NewCoinOrder extends Command
                     $isSale = false;
                 }
             }
-            GateMessage::query()->insert(['message'=>$currency . '买入价' . $price . '---卖出价' . $SalePrice]);
+            GateMessage::query()->insert([ 'message' => $currency . '买入价' . $price . '---卖出价' . $SalePrice ]);
             return true;
         } catch (\Exception $e) {
-            if (date('i')>2&&date('i')<58){
-                GateMessage::query()->insert(['message'=>$e->getMessage()]);
+            if (date('i') > 2 && date('i') < 58) {
+                GateMessage::query()->insert([ 'message' => $e->getMessage() ]);
                 return true;
             }
             $errorString = "has no latest price, please try later";
             if (strpos($e->getMessage(), $errorString) !== false) {
-                dump(date('Y-m-d H:i:s').$e->getMessage());
-                $this->toOrder($name,$apiInstance);
+                dump(date('Y-m-d H:i:s') . $e->getMessage());
+                $this->toOrder($name, $apiInstance);
             }
-            $limitError='Request Rate Limit Exceeded (007)';
+            $limitError = 'Request Rate Limit Exceeded (007)';
             if (strpos($e->getMessage(), $limitError) !== false) {
-                dump(date('Y-m-d H:i:s').$e->getMessage());
+                dump(date('Y-m-d H:i:s') . $e->getMessage());
                 sleep(1);
-                $this->toOrder($name,$apiInstance);
+                $this->toOrder($name, $apiInstance);
             }
             echo 'Exception when calling0 SpotApi->listCurrencies: ', $e->getMessage(), PHP_EOL;
         }
