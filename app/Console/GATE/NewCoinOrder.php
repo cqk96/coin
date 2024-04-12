@@ -4,6 +4,7 @@ namespace App\Console\GATE;
 
 
 use App\Models\GateList;
+use App\Models\GateMessage;
 use GateApi\Api\SpotApi;
 use GateApi\Configuration;
 use Illuminate\Console\Command;
@@ -105,6 +106,7 @@ class NewCoinOrder extends Command
             dd($currency . '买入价' . $price . '---卖出价' . $nowPrice);
         } catch (\Exception $e) {
             if (date('i')>2){
+                GateMessage::query()->insert(['message'=>$e->getMessage()]);
                 return true;
             }
             $errorString = "has no latest price, please try later";

@@ -21,8 +21,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-       $schedule->command('GateCoinList')->everyMinute();
-       $schedule->command('GateUser')->everyMinute();
+       $schedule->command('GateCoinList')->hourly();
+       $schedule->command('GateUser')->hourly();
        $schedule->command('NewCoinOrder')->hourly();
     }
 
