@@ -67,7 +67,7 @@ class NewCoinOrder extends Command
                 'type'          => 'market',
                 'time_in_force' => 'ioc',
                 'currency_pair' => $currency,
-                'amount'        => '10',
+                'amount'        => '50',
                 'side'          => 'buy',
             ];
             $order = new \GateApi\Model\Order($data);
