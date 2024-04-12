@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
        $schedule->command('GateCoinList')->hourly();
        $schedule->command('GateUser')->hourly();
-       $schedule->command('NewCoinOrder')->hourly();
+       $schedule->command('NewCoinOrder')->hourlyAt(59);
     }
 
     /**
