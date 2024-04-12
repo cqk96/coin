@@ -104,7 +104,7 @@ class NewCoinOrder extends Command
 
             dd($currency . '买入价' . $price . '---卖出价' . $nowPrice);
         } catch (\Exception $e) {
-            if (date('i')>5){
+            if (date('i')>2){
                 return true;
             }
             $errorString = "has no latest price, please try later";
