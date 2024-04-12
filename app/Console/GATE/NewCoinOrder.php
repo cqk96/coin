@@ -41,24 +41,25 @@ class NewCoinOrder extends Command
             ->orderBy('buy_start', 'asc')
             ->get()
             ->first();
-        $this->toOrder($coin->name);
+        $config = Configuration::getDefaultConfiguration()
+            ->setKey('695f80c9d08c57d585f81b80e9606e66')
+            ->setSecret('1a878d3b374543bfd88bd8b61ff22b30dd88a0e7051ed9973b0c2d2b798f7b87');
+
+
+        $apiInstance = new SpotApi(
+            new Client(),
+            $config
+        );
+        $this->toOrder($coin->name,$apiInstance);
 
     }
 
-    public function toOrder($name){
+    public function toOrder($name,$apiInstance){
 
         $currency = $name.'_USDT';
 
         try {
-            $config = Configuration::getDefaultConfiguration()
-                ->setKey('695f80c9d08c57d585f81b80e9606e66')
-                ->setSecret('1a878d3b374543bfd88bd8b61ff22b30dd88a0e7051ed9973b0c2d2b798f7b87');
 
-
-            $apiInstance = new SpotApi(
-                new Client(),
-                $config
-            );
             //todo 金额改成设置
 
             $data = [
@@ -80,7 +81,7 @@ class NewCoinOrder extends Command
             $PriceUp = $price * 1.2;
             $PriceDown = $price * 0.9;
             $isSale = true;
-            dump('购买完成等待卖出price' . $price);
+            dump(date('Y-m-d H:i:s').'购买完成等待卖出price' . $price);
             while ($isSale) {
                 $associate_array['currency_pair'] = $currency;
                 $tickers = $apiInstance->listTickers($associate_array);
@@ -106,7 +107,7 @@ class NewCoinOrder extends Command
             $errorString = "has no latest price, please try later";
             if (strpos($e->getMessage(), $errorString) !== false) {
                 dump(date('Y-m-d H:i:s').$e->getMessage());
-                $this->toOrder($name);
+                $this->toOrder($name,$apiInstance);
             }
             echo 'Exception when calling0 SpotApi->listCurrencies: ', $e->getMessage(), PHP_EOL;
         }
