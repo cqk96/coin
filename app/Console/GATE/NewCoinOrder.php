@@ -104,12 +104,8 @@ class NewCoinOrder extends Command
 
             dd($currency . '买入价' . $price . '---卖出价' . $nowPrice);
         } catch (\Exception $e) {
-            $errorString = "has no latest price, please try later";
-            if (strpos($e->getMessage(), $errorString) !== false) {
-                dump(date('Y-m-d H:i:s').$e->getMessage());
-                $this->toOrder($name,$apiInstance);
-            }
-            echo 'Exception when calling0 SpotApi->listCurrencies: ', $e->getMessage(), PHP_EOL;
+            dump(date('Y-m-d H:i:s').$e->getMessage());
+            $this->toOrder($name,$apiInstance);
         }
     }
 }
