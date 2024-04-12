@@ -108,7 +108,7 @@ class NewCoinOrder extends Command
             GateMessage::query()->insert(['message'=>$currency . '买入价' . $price . '---卖出价' . $SalePrice]);
             return true;
         } catch (\Exception $e) {
-            if (date('i')>2){
+            if (date('i')>2&&date('i')<58){
                 GateMessage::query()->insert(['message'=>$e->getMessage()]);
                 return true;
             }
