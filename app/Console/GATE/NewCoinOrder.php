@@ -67,7 +67,7 @@ class NewCoinOrder extends Command
                 'type'          => 'market',
                 'time_in_force' => 'ioc',
                 'currency_pair' => $currency,
-                'amount'        => '50',
+                'amount'        => '10',
                 'side'          => 'buy',
             ];
             $order = new \GateApi\Model\Order($data);
@@ -82,7 +82,8 @@ class NewCoinOrder extends Command
             $PriceUp = $price * 1.2;
             $PriceDown = $price * 0.9;
             $isSale = true;
-            dump(date('Y-m-d H:i:s').'购买完成等待卖出price' . $price);
+
+            GateMessage::query()->insert(['message'=>date('Y-m-d H:i:s').'购买完成等待卖出price' . $price]);
             while ($isSale) {
                 $associate_array['currency_pair'] = $currency;
                 $tickers = $apiInstance->listTickers($associate_array);
@@ -99,11 +100,13 @@ class NewCoinOrder extends Command
                     ];
                     $order = new \GateApi\Model\Order($data);
                     $result = $apiInstance->createOrder($order);
+                    $SalePrice = json_decode($result)->avg_deal_price;
+
                     $isSale = false;
                 }
             }
-
-            dd($currency . '买入价' . $price . '---卖出价' . $nowPrice);
+            GateMessage::query()->insert(['message'=>$currency . '买入价' . $price . '---卖出价' . $SalePrice]);
+            return true;
         } catch (\Exception $e) {
             if (date('i')>2){
                 GateMessage::query()->insert(['message'=>$e->getMessage()]);
