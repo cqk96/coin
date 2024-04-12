@@ -105,6 +105,7 @@ class NewCoinOrder extends Command
             dd($currency . '买入价' . $price . '---卖出价' . $nowPrice);
         } catch (\Exception $e) {
             dump(date('Y-m-d H:i:s').$e->getMessage());
+            sleep(1);
             $this->toOrder($name,$apiInstance);
         }
     }
