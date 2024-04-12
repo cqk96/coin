@@ -80,7 +80,7 @@ class NewCoinOrder extends Command
 
             // 10%涨跌就卖出
             $PriceUp = $price * 1.2;
-            $PriceDown = $price * 0.9;
+//            $PriceDown = $price * 0.9;
             $isSale = true;
 
             GateMessage::query()->insert(['message'=>date('Y-m-d H:i:s').'购买完成等待卖出price' . $price]);
@@ -89,7 +89,9 @@ class NewCoinOrder extends Command
                 $tickers = $apiInstance->listTickers($associate_array);
                 $nowPrice = json_decode($tickers[0])->lowest_ask;
                 dump(date('Y-m-d H:i:s').'买入价：' . $price . '当前价格' . $nowPrice . '卖出目标价格' . '[' . $PriceDown .'|'. $PriceUp . ']');
-                if ($nowPrice > $PriceUp || $nowPrice < $PriceDown) {
+                if ($nowPrice > $PriceUp
+//                    || $nowPrice < $PriceDown
+                ) {
 
                     $data = [
                         'type'          => 'market',
